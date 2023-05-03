@@ -1,5 +1,12 @@
 const User = require('../../models/Users');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+const jwtToken = function (id, email, password) {
+    jwt.sign({ id, email, password }, process.env.JWT_KEY, {
+        expiresIn: '2h',
+    });
+};
 // function validateEmailAndPassword(req, res, n) {
 //     const { email, password } = req.body;
 //     if (!email || !password) {
@@ -50,9 +57,20 @@ async function signup(req, res) {
             active: false,
         });
 
+        const token = jwt.sign(
+            { id: user.ID_KEY, email, username },
+            process.env.JWT_KEY,
+            {
+                expiresIn: '2h',
+            }
+        );
+
+        user['token'] = token;
+        console.log(user);
+        user.active = true;
         res.json({
             status: 'success',
-            data: user,
+            data: { user, token: user['tokens'] },
         });
     } catch (error) {
         res.json({ status: 'fail', msg: error.message });
@@ -75,20 +93,27 @@ async function login(req, res) {
             throw new Error('This email not exists or Wrong password');
         }
 
-        the_email.active = true;
+        const token = jwt.sign({ email, password }, process.env.JWT_KEY, {
+            expiresIn: '2h',
+        });
 
-
+        the_email.token = token;
         res.json({
             status: 'success',
             res: 'Done login',
+            token: the_email.token,
         });
-    } 
-    catch (error) {
+    } catch (error) {
         res.json({ status: 'fail', msg: error.message });
     }
 }
 
+const helloPage = (req, res) => {
+    res.send('Hello Page');
+};
 module.exports = {
     signup,
     login,
+
+    helloPage,
 };

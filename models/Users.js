@@ -26,6 +26,9 @@ const User = mySql.define('User', {
     active: {
         type: Sequelize.BOOLEAN,
     },
+    token: {
+        type: Sequelize.STRING,
+    },
 });
 
 module.exports = User;
