@@ -1,6 +1,6 @@
 const List = require('../../models/Lists');
 
-exports.ظcreateList = async (req, res) => {
+exports.createList = async (req, res) => {
     try {
         const the_list = req.body;
         const new_list = await List.create(the_list);
